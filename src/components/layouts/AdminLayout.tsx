@@ -38,7 +38,7 @@ export function AdminLayout({ children, title, breadcrumb }: { children: ReactNo
         </div>
         <nav className="p-3 space-y-1">
           {nav.map((item) => {
-            const active = item.exact ? path === item.to : path.startsWith(item.to);
+            const active = "exact" in item && item.exact ? path === item.to : path.startsWith(item.to);
             return (
               <Link
                 key={item.to}
