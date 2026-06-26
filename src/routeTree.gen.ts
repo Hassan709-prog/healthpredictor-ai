@@ -13,10 +13,16 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardPredictRouteImport } from './routes/dashboard.predict'
 import { Route as DashboardHistoryRouteImport } from './routes/dashboard.history'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSymptomsRouteImport } from './routes/admin.symptoms'
+import { Route as AdminRecommendationsRouteImport } from './routes/admin.recommendations'
+import { Route as AdminPredictionsRouteImport } from './routes/admin.predictions'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminDiseasesRouteImport } from './routes/admin.diseases'
 import { Route as DashboardPredictResultRouteImport } from './routes/dashboard.predict.result'
 
 const RegisterRoute = RegisterRouteImport.update({
@@ -39,6 +45,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardProfileRoute = DashboardProfileRouteImport.update({
   id: '/dashboard/profile',
   path: '/dashboard/profile',
@@ -54,9 +65,34 @@ const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
   path: '/dashboard/history',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSymptomsRoute = AdminSymptomsRouteImport.update({
+  id: '/admin/symptoms',
+  path: '/admin/symptoms',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRecommendationsRoute = AdminRecommendationsRouteImport.update({
+  id: '/admin/recommendations',
+  path: '/admin/recommendations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminPredictionsRoute = AdminPredictionsRouteImport.update({
+  id: '/admin/predictions',
+  path: '/admin/predictions',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDiseasesRoute = AdminDiseasesRouteImport.update({
+  id: '/admin/diseases',
+  path: '/admin/diseases',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardPredictResultRoute = DashboardPredictResultRouteImport.update({
@@ -69,10 +105,16 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/admin/diseases': typeof AdminDiseasesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/predictions': typeof AdminPredictionsRoute
+  '/admin/recommendations': typeof AdminRecommendationsRoute
+  '/admin/symptoms': typeof AdminSymptomsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/predict': typeof DashboardPredictRouteWithChildren
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
@@ -80,10 +122,16 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/admin/diseases': typeof AdminDiseasesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/predictions': typeof AdminPredictionsRoute
+  '/admin/recommendations': typeof AdminRecommendationsRoute
+  '/admin/symptoms': typeof AdminSymptomsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/predict': typeof DashboardPredictRouteWithChildren
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
   '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
@@ -92,10 +140,16 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/admin/diseases': typeof AdminDiseasesRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/predictions': typeof AdminPredictionsRoute
+  '/admin/recommendations': typeof AdminRecommendationsRoute
+  '/admin/symptoms': typeof AdminSymptomsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
   '/dashboard/predict': typeof DashboardPredictRouteWithChildren
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
@@ -105,10 +159,16 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/admin/diseases'
     | '/admin/login'
+    | '/admin/predictions'
+    | '/admin/recommendations'
+    | '/admin/symptoms'
+    | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/admin/'
     | '/dashboard/'
     | '/dashboard/predict/result'
   fileRoutesByTo: FileRoutesByTo
@@ -116,10 +176,16 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/admin/diseases'
     | '/admin/login'
+    | '/admin/predictions'
+    | '/admin/recommendations'
+    | '/admin/symptoms'
+    | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/admin'
     | '/dashboard'
     | '/dashboard/predict/result'
   id:
@@ -127,10 +193,16 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/register'
+    | '/admin/diseases'
     | '/admin/login'
+    | '/admin/predictions'
+    | '/admin/recommendations'
+    | '/admin/symptoms'
+    | '/admin/users'
     | '/dashboard/history'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/admin/'
     | '/dashboard/'
     | '/dashboard/predict/result'
   fileRoutesById: FileRoutesById
@@ -139,10 +211,16 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  AdminDiseasesRoute: typeof AdminDiseasesRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminPredictionsRoute: typeof AdminPredictionsRoute
+  AdminRecommendationsRoute: typeof AdminRecommendationsRoute
+  AdminSymptomsRoute: typeof AdminSymptomsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   DashboardHistoryRoute: typeof DashboardHistoryRoute
   DashboardPredictRoute: typeof DashboardPredictRouteWithChildren
   DashboardProfileRoute: typeof DashboardProfileRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -176,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/profile': {
       id: '/dashboard/profile'
       path: '/dashboard/profile'
@@ -197,11 +282,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardHistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/symptoms': {
+      id: '/admin/symptoms'
+      path: '/admin/symptoms'
+      fullPath: '/admin/symptoms'
+      preLoaderRoute: typeof AdminSymptomsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/recommendations': {
+      id: '/admin/recommendations'
+      path: '/admin/recommendations'
+      fullPath: '/admin/recommendations'
+      preLoaderRoute: typeof AdminRecommendationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/predictions': {
+      id: '/admin/predictions'
+      path: '/admin/predictions'
+      fullPath: '/admin/predictions'
+      preLoaderRoute: typeof AdminPredictionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/diseases': {
+      id: '/admin/diseases'
+      path: '/admin/diseases'
+      fullPath: '/admin/diseases'
+      preLoaderRoute: typeof AdminDiseasesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/predict/result': {
@@ -229,10 +349,16 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  AdminDiseasesRoute: AdminDiseasesRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminPredictionsRoute: AdminPredictionsRoute,
+  AdminRecommendationsRoute: AdminRecommendationsRoute,
+  AdminSymptomsRoute: AdminSymptomsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   DashboardHistoryRoute: DashboardHistoryRoute,
   DashboardPredictRoute: DashboardPredictRouteWithChildren,
   DashboardProfileRoute: DashboardProfileRoute,
+  AdminIndexRoute: AdminIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
