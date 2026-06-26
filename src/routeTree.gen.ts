@@ -12,7 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
+import { Route as DashboardPredictRouteImport } from './routes/dashboard.predict'
+import { Route as DashboardHistoryRouteImport } from './routes/dashboard.history'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as DashboardPredictResultRouteImport } from './routes/dashboard.predict.result'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -29,10 +34,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardProfileRoute = DashboardProfileRouteImport.update({
+  id: '/dashboard/profile',
+  path: '/dashboard/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardPredictRoute = DashboardPredictRouteImport.update({
+  id: '/dashboard/predict',
+  path: '/dashboard/predict',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
+  id: '/dashboard/history',
+  path: '/dashboard/history',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardPredictResultRoute = DashboardPredictResultRouteImport.update({
+  id: '/result',
+  path: '/result',
+  getParentRoute: () => DashboardPredictRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -40,12 +70,22 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard': typeof DashboardIndexRoute
+  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +93,46 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/admin/login': typeof AdminLoginRoute
+  '/dashboard/history': typeof DashboardHistoryRoute
+  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/': typeof DashboardIndexRoute
+  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/register' | '/admin/login'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/admin/login'
+    | '/dashboard/history'
+    | '/dashboard/predict'
+    | '/dashboard/profile'
+    | '/dashboard/'
+    | '/dashboard/predict/result'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/register' | '/admin/login'
-  id: '__root__' | '/' | '/login' | '/register' | '/admin/login'
+  to:
+    | '/'
+    | '/login'
+    | '/register'
+    | '/admin/login'
+    | '/dashboard/history'
+    | '/dashboard/predict'
+    | '/dashboard/profile'
+    | '/dashboard'
+    | '/dashboard/predict/result'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/register'
+    | '/admin/login'
+    | '/dashboard/history'
+    | '/dashboard/predict'
+    | '/dashboard/profile'
+    | '/dashboard/'
+    | '/dashboard/predict/result'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +140,10 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  DashboardHistoryRoute: typeof DashboardHistoryRoute
+  DashboardPredictRoute: typeof DashboardPredictRouteWithChildren
+  DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -92,6 +169,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/profile': {
+      id: '/dashboard/profile'
+      path: '/dashboard/profile'
+      fullPath: '/dashboard/profile'
+      preLoaderRoute: typeof DashboardProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/predict': {
+      id: '/dashboard/predict'
+      path: '/dashboard/predict'
+      fullPath: '/dashboard/predict'
+      preLoaderRoute: typeof DashboardPredictRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/history': {
+      id: '/dashboard/history'
+      path: '/dashboard/history'
+      fullPath: '/dashboard/history'
+      preLoaderRoute: typeof DashboardHistoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
@@ -99,14 +204,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/predict/result': {
+      id: '/dashboard/predict/result'
+      path: '/result'
+      fullPath: '/dashboard/predict/result'
+      preLoaderRoute: typeof DashboardPredictResultRouteImport
+      parentRoute: typeof DashboardPredictRoute
+    }
   }
 }
+
+interface DashboardPredictRouteChildren {
+  DashboardPredictResultRoute: typeof DashboardPredictResultRoute
+}
+
+const DashboardPredictRouteChildren: DashboardPredictRouteChildren = {
+  DashboardPredictResultRoute: DashboardPredictResultRoute,
+}
+
+const DashboardPredictRouteWithChildren =
+  DashboardPredictRoute._addFileChildren(DashboardPredictRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
   AdminLoginRoute: AdminLoginRoute,
+  DashboardHistoryRoute: DashboardHistoryRoute,
+  DashboardPredictRoute: DashboardPredictRouteWithChildren,
+  DashboardProfileRoute: DashboardProfileRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
