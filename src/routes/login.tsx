@@ -1,9 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Activity, Mail, Lock } from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Activity, Mail, Lock, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { useState } from "react";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/login")({
   head: () => ({ meta: [{ title: "Login — HealthPredictor" }, { name: "description", content: "Sign in to your HealthPredictor account." }] }),
@@ -11,6 +12,23 @@ export const Route = createFileRoute("/login")({
 });
 
 function LoginPage() {
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    try {
+      await login(email, password);
+      navigate({ to: "/dashboard" });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Login failed.");
+    }
+  };
+
   return (
     <div className="min-h-screen grid lg:grid-cols-2">
       <div className="hidden lg:flex flex-col justify-between p-12 bg-gradient-hero text-primary-foreground">
@@ -32,18 +50,37 @@ function LoginPage() {
           <h1 className="text-3xl font-bold">Sign in</h1>
           <p className="mt-2 text-sm text-muted-foreground">Enter your credentials to access your dashboard.</p>
 
-          <form className="mt-8 space-y-4" onSubmit={(e) => e.preventDefault()}>
-            <Field label="Email" icon={Mail}><Input type="email" placeholder="you@example.com" /></Field>
-            <Field label="Password" icon={Lock}><Input type="password" placeholder="••••••••" /></Field>
+          <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
+            <Field label="Email" icon={Mail}>
+              <Input
+                id="login-email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Field>
+            <Field label="Password" icon={Lock}>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Field>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm">
-                <Checkbox id="remember" /> <span>Remember me</span>
-              </label>
-              <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
-            </div>
+            {error && (
+              <div className="rounded-lg bg-destructive/10 border border-destructive/20 px-4 py-3 text-sm text-destructive">
+                {error}
+              </div>
+            )}
 
-            <Button asChild className="w-full" size="lg"><Link to="/dashboard">Sign In</Link></Button>
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in…</> : "Sign In"}
+            </Button>
 
             <p className="text-center text-sm text-muted-foreground">
               Don't have an account? <Link to="/register" className="text-primary font-medium hover:underline">Register</Link>

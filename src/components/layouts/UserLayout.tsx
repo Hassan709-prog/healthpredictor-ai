@@ -1,9 +1,10 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
   LayoutDashboard, Stethoscope, History, User, LogOut, Bell, Menu, Activity,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/lib/auth-context";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -15,6 +16,17 @@ const nav = [
 export function UserLayout({ children, title, breadcrumb }: { children: ReactNode; title: string; breadcrumb?: string[] }) {
   const [open, setOpen] = useState(false);
   const path = useRouterState({ select: (s) => s.location.pathname });
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate({ to: "/login" });
+  };
+
+  const initials = user?.name
+    ? user.name.split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase()
+    : "??";
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -52,12 +64,12 @@ export function UserLayout({ children, title, breadcrumb }: { children: ReactNod
               </Link>
             );
           })}
-          <Link
-            to="/login"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent mt-6"
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent mt-6"
           >
             <LogOut className="h-4 w-4" /> Logout
-          </Link>
+          </button>
         </nav>
       </aside>
 
@@ -85,11 +97,11 @@ export function UserLayout({ children, title, breadcrumb }: { children: ReactNod
           </button>
           <div className="flex items-center gap-3 pl-3 border-l border-border">
             <div className="hidden md:block text-right">
-              <div className="text-sm font-medium">Sarah Johnson</div>
-              <div className="text-xs text-muted-foreground">Patient</div>
+              <div className="text-sm font-medium">{user?.name ?? "User"}</div>
+              <div className="text-xs text-muted-foreground capitalize">{user?.role ?? "patient"}</div>
             </div>
             <div className="h-9 w-9 rounded-full bg-gradient-hero text-primary-foreground grid place-items-center font-semibold">
-              SJ
+              {initials}
             </div>
           </div>
         </header>

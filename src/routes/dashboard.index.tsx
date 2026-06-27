@@ -2,7 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { UserLayout } from "@/components/layouts/UserLayout";
 import { Activity, TrendingUp, Stethoscope, HeartPulse, Sparkles, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { recentPredictions } from "@/lib/data";
+import { useEffect, useState } from "react";
+import { api, type Prediction } from "@/lib/api";
+import { useAuth } from "@/lib/auth-context";
 
 export const Route = createFileRoute("/dashboard/")({
   head: () => ({ meta: [{ title: "Dashboard — HealthPredictor" }] }),
@@ -10,13 +12,28 @@ export const Route = createFileRoute("/dashboard/")({
 });
 
 function DashboardPage() {
+  const { user } = useAuth();
+  const [predictions, setPredictions] = useState<Prediction[]>([]);
+
+  useEffect(() => {
+    api.predict.history(0, 4).then(setPredictions).catch(() => {});
+  }, []);
+
+  const lastDisease = predictions[0]?.disease ?? "—";
+  const lastDate = predictions[0]?.created_at
+    ? new Date(predictions[0].created_at).toLocaleDateString()
+    : "—";
+  const avgConf = predictions.length
+    ? Math.round(predictions.reduce((s, p) => s + (p.confidence ?? 0), 0) / predictions.length * 100)
+    : null;
+
   return (
     <UserLayout title="Dashboard" breadcrumb={["Home", "Dashboard"]}>
       <div className="grid gap-6">
         <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <StatCard icon={Activity} label="Total Predictions" value="24" trend="+3 this week" tone="primary" />
-          <StatCard icon={Stethoscope} label="Last Prediction" value="Influenza" trend="2 days ago" tone="success" />
-          <StatCard icon={TrendingUp} label="Prediction Accuracy" value="92%" trend="+2% vs last month" tone="warning" />
+          <StatCard icon={Activity} label="Total Predictions" value={String(predictions.length)} trend="from your history" tone="primary" />
+          <StatCard icon={Stethoscope} label="Last Prediction" value={lastDisease} trend={lastDate} tone="success" />
+          <StatCard icon={TrendingUp} label="Avg Confidence" value={avgConf != null ? `${avgConf}%` : "—"} trend="across all predictions" tone="warning" />
           <StatCard icon={HeartPulse} label="Health Status" value="Good" trend="Stable" tone="success" />
         </div>
 
@@ -40,18 +57,31 @@ function DashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentPredictions.slice(0, 4).map((p) => (
-                    <tr key={p.id} className="border-t border-border">
-                      <td className="px-6 py-4">{p.date}</td>
-                      <td className="px-6 py-4 text-muted-foreground">{p.symptoms.join(", ")}</td>
-                      <td className="px-6 py-4 font-medium">{p.disease}</td>
-                      <td className="px-6 py-4">
-                        <span className="inline-flex px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-semibold">
-                          {p.confidence}%
-                        </span>
+                  {predictions.length === 0 && (
+                    <tr>
+                      <td colSpan={4} className="px-6 py-10 text-center text-muted-foreground text-sm">
+                        No predictions yet. <Link to="/dashboard/predict" className="text-primary hover:underline">Make your first prediction →</Link>
                       </td>
                     </tr>
-                  ))}
+                  )}
+                  {predictions.map((p) => {
+                    const syms: string[] = JSON.parse(p.symptoms);
+                    const conf = p.confidence != null ? Math.round(p.confidence * 100) : null;
+                    return (
+                      <tr key={p.id} className="border-t border-border">
+                        <td className="px-6 py-4">{new Date(p.created_at).toLocaleDateString()}</td>
+                        <td className="px-6 py-4 text-muted-foreground">{syms.join(", ")}</td>
+                        <td className="px-6 py-4 font-medium">{p.disease}</td>
+                        <td className="px-6 py-4">
+                          {conf != null && (
+                            <span className="inline-flex px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-semibold">
+                              {conf}%
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -61,7 +91,7 @@ function DashboardPage() {
             <div className="bg-gradient-hero text-primary-foreground p-6 rounded-2xl shadow-soft">
               <Sparkles className="h-6 w-6 mb-3" />
               <h3 className="font-semibold text-lg">Quick Predict</h3>
-              <p className="text-sm opacity-90 mt-1">Start a new symptom analysis in seconds.</p>
+              <p className="text-sm opacity-90 mt-1">Hello, {user?.name ?? "there"}! Start a new symptom analysis.</p>
               <Button asChild variant="secondary" className="mt-4 w-full"><Link to="/dashboard/predict">Predict Now</Link></Button>
             </div>
 
