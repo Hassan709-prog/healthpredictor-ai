@@ -1,0 +1,4 @@
+Model,Accuracy (%)
+Decision Tree,100.0
+Random Forest,100.0
+XGBoost,100.0

@@ -12,101 +12,66 @@ from auth_utils import get_current_user
 router = APIRouter()
 
 
-# ─────────────────────── Mock AI Engine ───────────────────────
+import os
+import numpy as np
+import joblib
 
-DISEASE_MAP = {
-    frozenset(["fever", "cough", "sore throat", "runny nose"]): {
-        "disease": "Common Cold",
-        "confidence": 0.87,
-        "recommendations": (
-            "Rest well and stay hydrated. Take over-the-counter antihistamines or decongestants "
-            "as needed. Gargle with warm salt water for sore throat relief. If symptoms persist "
-            "beyond 10 days, consult a doctor."
-        ),
-    },
-    frozenset(["fever", "cough", "shortness of breath", "fatigue"]): {
-        "disease": "Influenza (Flu)",
-        "confidence": 0.82,
-        "recommendations": (
-            "Rest at home and avoid contact with others. Stay hydrated. Antiviral medications "
-            "(e.g., oseltamivir) may be prescribed within the first 48 hours. Seek immediate "
-            "medical attention if breathing worsens."
-        ),
-    },
-    frozenset(["chest pain", "shortness of breath", "sweating", "nausea"]): {
-        "disease": "Possible Cardiac Event",
-        "confidence": 0.74,
-        "recommendations": (
-            "SEEK EMERGENCY MEDICAL CARE IMMEDIATELY. Call emergency services (e.g., 911). "
-            "Chew an aspirin (325 mg) if not allergic. Do not drive yourself to the hospital."
-        ),
-    },
-    frozenset(["headache", "fever", "stiff neck", "sensitivity to light"]): {
-        "disease": "Meningitis (suspected)",
-        "confidence": 0.79,
-        "recommendations": (
-            "SEEK EMERGENCY MEDICAL CARE IMMEDIATELY. Meningitis is a medical emergency. "
-            "Antibiotics must be started as soon as possible."
-        ),
-    },
-    frozenset(["abdominal pain", "nausea", "vomiting", "diarrhea"]): {
-        "disease": "Gastroenteritis",
-        "confidence": 0.85,
-        "recommendations": (
-            "Stay hydrated with water and electrolyte solutions. Follow a bland diet (BRAT: "
-            "bananas, rice, applesauce, toast). Avoid dairy and fatty foods. Consult a doctor "
-            "if symptoms last more than 3 days or if there is blood in stool."
-        ),
-    },
-    frozenset(["fatigue", "increased thirst", "frequent urination", "blurred vision"]): {
-        "disease": "Possible Diabetes (Type 2)",
-        "confidence": 0.71,
-        "recommendations": (
-            "Consult a doctor for blood glucose testing. Adopt a low-sugar diet and increase "
-            "physical activity. Monitor blood sugar levels regularly if already diagnosed."
-        ),
-    },
-    frozenset(["rash", "fever", "joint pain", "red eyes"]): {
-        "disease": "Dengue Fever (suspected)",
-        "confidence": 0.76,
-        "recommendations": (
-            "Seek medical attention promptly. Rest and drink plenty of fluids. Take paracetamol "
-            "for fever — AVOID ibuprofen or aspirin. Monitor platelet count as directed by a doctor."
-        ),
-    },
-}
+# Determine absolute path to the HealthPredictor files
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+MODEL_DIR = os.path.join(BASE_DIR, "HealthPredictor")
 
-_DEFAULT_RESULT = {
-    "disease": "Unspecified Condition",
-    "confidence": 0.50,
-    "recommendations": (
-        "Your symptoms do not match a specific condition in our database. Please consult a "
-        "qualified healthcare professional for an accurate diagnosis."
-    ),
-}
-
+# Load model and encoders once at module level to avoid reloading on each request
+try:
+    _model = joblib.load(os.path.join(MODEL_DIR, "xgboost_model.pkl"))
+    _label_encoder = joblib.load(os.path.join(MODEL_DIR, "label_encoder.pkl"))
+    _feature_columns = joblib.load(os.path.join(MODEL_DIR, "feature_columns.pkl"))
+except Exception as e:
+    print(f"Warning: Could not load ML models. Error: {e}")
+    _model, _label_encoder, _feature_columns = None, None, []
 
 def ai_predict(symptoms: List[str]) -> dict:
     """
-    Simple rule-based mock AI predictor.
-    Finds the disease whose symptom set has the highest overlap with the input.
+    Real ML-based predictor using XGBoost.
     """
-    symptom_set = frozenset(s.lower().strip() for s in symptoms)
-    best_match = None
-    best_overlap = 0
+    if _model is None or _label_encoder is None or not _feature_columns:
+        return {
+            "disease": "System Error: Model Not Loaded",
+            "confidence": 0.0,
+            "recommendations": "The AI model is currently unavailable."
+        }
 
-    for key, result in DISEASE_MAP.items():
-        overlap = len(symptom_set & key)
-        if overlap > best_overlap:
-            best_overlap = overlap
-            best_match = result
+    # Clean the internal feature columns to remove leading spaces (e.g. ' sweating' -> 'sweating')
+    cleaned_features = [f.strip() for f in _feature_columns]
 
-    if best_match and best_overlap >= 2:
-        # Add slight random noise to confidence to simulate a model
-        noise = random.uniform(-0.05, 0.05)
-        return {**best_match, "confidence": round(min(0.99, max(0.50, best_match["confidence"] + noise)), 2)}
-
-    return _DEFAULT_RESULT
+    # Normalize incoming symptoms (e.g. "Skin Rash" -> "skin_rash")
+    input_symptoms = [s.strip().lower().replace(" ", "_") for s in symptoms]
+    
+    # Create feature vector
+    input_data = np.zeros(len(_feature_columns))
+    
+    for symptom in input_symptoms:
+        if symptom in cleaned_features:
+            index = cleaned_features.index(symptom)
+            input_data[index] = 1
+            
+    input_data = input_data.reshape(1, -1)
+    
+    # Predict
+    prediction = _model.predict(input_data)
+    disease = _label_encoder.inverse_transform(prediction)[0]
+    
+    # Confidence Score
+    probabilities = _model.predict_proba(input_data)
+    confidence = round(float(np.max(probabilities)), 2)
+    
+    return {
+        "disease": disease,
+        "confidence": confidence,
+        "recommendations": (
+            "Please consult a qualified healthcare professional for an accurate diagnosis and treatment plan. "
+            "This prediction is generated by an AI model based on your symptoms."
+        )
+    }
 
 
 # ─────────────────────── Endpoints ───────────────────────
