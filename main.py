@@ -19,9 +19,9 @@ CORS_ORIGIN_REGEX = re.compile(r"https?://(localhost|127\.0\.0\.1)(:\d+)?")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?",
+    allow_origin_regex=r".*",
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"],
     max_age=600,
@@ -33,7 +33,7 @@ app.add_middleware(
 async def global_exception_handler(request: Request, exc: Exception):
     origin = request.headers.get("origin", "")
     headers = {}
-    if CORS_ORIGIN_REGEX.fullmatch(origin):
+    if origin:
         headers["Access-Control-Allow-Origin"] = origin
         headers["Access-Control-Allow-Credentials"] = "true"
     return JSONResponse(
