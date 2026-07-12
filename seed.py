@@ -1,5 +1,6 @@
 from database import SessionLocal, engine, Base
-from models import Specialist
+from models import Specialist, User
+from auth_utils import get_password_hash
 
 def seed_specialists():
     db = SessionLocal()
@@ -48,6 +49,28 @@ def seed_specialists():
     print("Successfully seeded 16 specialists.")
     db.close()
 
+def seed_admin():
+    db = SessionLocal()
+    if db.query(User).filter(User.email == "admin@healthpredictor.com").first():
+        print("Admin user already seeded.")
+        db.close()
+        return
+
+    admin = User(
+        email="admin@healthpredictor.com",
+        hashed_password=get_password_hash("admin123"),
+        name="System Admin",
+        age=30,
+        gender="Other",
+        role="admin",
+        status="Active"
+    )
+    db.add(admin)
+    db.commit()
+    print("Successfully seeded admin user (admin@healthpredictor.com / admin123).")
+    db.close()
+
 if __name__ == "__main__":
     Base.metadata.create_all(bind=engine)
     seed_specialists()
+    seed_admin()
