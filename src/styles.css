@@ -145,6 +145,22 @@
   h1, h2, h3, h4, h5 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
+@media print {
+  body {
+    background-color: white !important;
+  }
+  aside, header {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}
+
 @utility shadow-soft {
   box-shadow: var(--shadow-soft);
 }

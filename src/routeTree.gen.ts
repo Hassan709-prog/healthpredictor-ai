@@ -14,8 +14,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as DashboardReportsRouteImport } from './routes/dashboard.reports'
 import { Route as DashboardProfileRouteImport } from './routes/dashboard.profile'
 import { Route as DashboardPredictRouteImport } from './routes/dashboard.predict'
+import { Route as DashboardJournalRouteImport } from './routes/dashboard.journal'
 import { Route as DashboardHistoryRouteImport } from './routes/dashboard.history'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as AdminSymptomsRouteImport } from './routes/admin.symptoms'
@@ -23,7 +25,6 @@ import { Route as AdminRecommendationsRouteImport } from './routes/admin.recomme
 import { Route as AdminPredictionsRouteImport } from './routes/admin.predictions'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminDiseasesRouteImport } from './routes/admin.diseases'
-import { Route as DashboardPredictResultRouteImport } from './routes/dashboard.predict.result'
 
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
@@ -50,6 +51,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardReportsRoute = DashboardReportsRouteImport.update({
+  id: '/dashboard/reports',
+  path: '/dashboard/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardProfileRoute = DashboardProfileRouteImport.update({
   id: '/dashboard/profile',
   path: '/dashboard/profile',
@@ -58,6 +64,11 @@ const DashboardProfileRoute = DashboardProfileRouteImport.update({
 const DashboardPredictRoute = DashboardPredictRouteImport.update({
   id: '/dashboard/predict',
   path: '/dashboard/predict',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardJournalRoute = DashboardJournalRouteImport.update({
+  id: '/dashboard/journal',
+  path: '/dashboard/journal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardHistoryRoute = DashboardHistoryRouteImport.update({
@@ -95,11 +106,6 @@ const AdminDiseasesRoute = AdminDiseasesRouteImport.update({
   path: '/admin/diseases',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DashboardPredictResultRoute = DashboardPredictResultRouteImport.update({
-  id: '/result',
-  path: '/result',
-  getParentRoute: () => DashboardPredictRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -112,11 +118,12 @@ export interface FileRoutesByFullPath {
   '/admin/symptoms': typeof AdminSymptomsRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
-  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/journal': typeof DashboardJournalRoute
+  '/dashboard/predict': typeof DashboardPredictRoute
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -129,11 +136,12 @@ export interface FileRoutesByTo {
   '/admin/symptoms': typeof AdminSymptomsRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
-  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/journal': typeof DashboardJournalRoute
+  '/dashboard/predict': typeof DashboardPredictRoute
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/admin': typeof AdminIndexRoute
   '/dashboard': typeof DashboardIndexRoute
-  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -147,11 +155,12 @@ export interface FileRoutesById {
   '/admin/symptoms': typeof AdminSymptomsRoute
   '/admin/users': typeof AdminUsersRoute
   '/dashboard/history': typeof DashboardHistoryRoute
-  '/dashboard/predict': typeof DashboardPredictRouteWithChildren
+  '/dashboard/journal': typeof DashboardJournalRoute
+  '/dashboard/predict': typeof DashboardPredictRoute
   '/dashboard/profile': typeof DashboardProfileRoute
+  '/dashboard/reports': typeof DashboardReportsRoute
   '/admin/': typeof AdminIndexRoute
   '/dashboard/': typeof DashboardIndexRoute
-  '/dashboard/predict/result': typeof DashboardPredictResultRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,11 +175,12 @@ export interface FileRouteTypes {
     | '/admin/symptoms'
     | '/admin/users'
     | '/dashboard/history'
+    | '/dashboard/journal'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/dashboard/reports'
     | '/admin/'
     | '/dashboard/'
-    | '/dashboard/predict/result'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -183,11 +193,12 @@ export interface FileRouteTypes {
     | '/admin/symptoms'
     | '/admin/users'
     | '/dashboard/history'
+    | '/dashboard/journal'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/dashboard/reports'
     | '/admin'
     | '/dashboard'
-    | '/dashboard/predict/result'
   id:
     | '__root__'
     | '/'
@@ -200,11 +211,12 @@ export interface FileRouteTypes {
     | '/admin/symptoms'
     | '/admin/users'
     | '/dashboard/history'
+    | '/dashboard/journal'
     | '/dashboard/predict'
     | '/dashboard/profile'
+    | '/dashboard/reports'
     | '/admin/'
     | '/dashboard/'
-    | '/dashboard/predict/result'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -218,8 +230,10 @@ export interface RootRouteChildren {
   AdminSymptomsRoute: typeof AdminSymptomsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   DashboardHistoryRoute: typeof DashboardHistoryRoute
-  DashboardPredictRoute: typeof DashboardPredictRouteWithChildren
+  DashboardJournalRoute: typeof DashboardJournalRoute
+  DashboardPredictRoute: typeof DashboardPredictRoute
   DashboardProfileRoute: typeof DashboardProfileRoute
+  DashboardReportsRoute: typeof DashboardReportsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
@@ -261,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/reports': {
+      id: '/dashboard/reports'
+      path: '/dashboard/reports'
+      fullPath: '/dashboard/reports'
+      preLoaderRoute: typeof DashboardReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/profile': {
       id: '/dashboard/profile'
       path: '/dashboard/profile'
@@ -273,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/predict'
       fullPath: '/dashboard/predict'
       preLoaderRoute: typeof DashboardPredictRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/journal': {
+      id: '/dashboard/journal'
+      path: '/dashboard/journal'
+      fullPath: '/dashboard/journal'
+      preLoaderRoute: typeof DashboardJournalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/history': {
@@ -324,26 +352,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDiseasesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/dashboard/predict/result': {
-      id: '/dashboard/predict/result'
-      path: '/result'
-      fullPath: '/dashboard/predict/result'
-      preLoaderRoute: typeof DashboardPredictResultRouteImport
-      parentRoute: typeof DashboardPredictRoute
-    }
   }
 }
-
-interface DashboardPredictRouteChildren {
-  DashboardPredictResultRoute: typeof DashboardPredictResultRoute
-}
-
-const DashboardPredictRouteChildren: DashboardPredictRouteChildren = {
-  DashboardPredictResultRoute: DashboardPredictResultRoute,
-}
-
-const DashboardPredictRouteWithChildren =
-  DashboardPredictRoute._addFileChildren(DashboardPredictRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -356,8 +366,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminSymptomsRoute: AdminSymptomsRoute,
   AdminUsersRoute: AdminUsersRoute,
   DashboardHistoryRoute: DashboardHistoryRoute,
-  DashboardPredictRoute: DashboardPredictRouteWithChildren,
+  DashboardJournalRoute: DashboardJournalRoute,
+  DashboardPredictRoute: DashboardPredictRoute,
   DashboardProfileRoute: DashboardProfileRoute,
+  DashboardReportsRoute: DashboardReportsRoute,
   AdminIndexRoute: AdminIndexRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }

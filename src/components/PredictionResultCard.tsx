@@ -1,53 +1,51 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { UserLayout } from "@/components/layouts/UserLayout";
-import { AlertTriangle, Stethoscope, ShieldCheck, Lightbulb, ArrowLeft } from "lucide-react";
+import { AlertTriangle, Stethoscope, ShieldCheck, Lightbulb, Download, UserPlus, MapPin, Phone, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { type Prediction } from "@/lib/api";
+import { Link } from "@tanstack/react-router";
+import { api, type Prediction, type Specialist, type SymptomDetail } from "@/lib/api";
+import { useEffect, useState, useRef } from "react";
 
-export const Route = createFileRoute("/dashboard/predict/result")({
-  head: () => ({ meta: [{ title: "Prediction Result — HealthPredictor" }] }),
-  component: ResultPage,
-});
+interface PredictionResultCardProps {
+  prediction: Prediction;
+  onReset: () => void;
+}
 
-function ResultPage() {
-  const [prediction, setPrediction] = useState<Prediction | null>(null);
+export function PredictionResultCard({ prediction, onReset }: PredictionResultCardProps) {
+  const [specialists, setSpecialists] = useState<Specialist[]>([]);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const raw = sessionStorage.getItem("hp_last_prediction");
-    if (raw) setPrediction(JSON.parse(raw) as Prediction);
-  }, []);
+    api.specialist.getForDisease(prediction.disease).then(setSpecialists).catch(console.error);
+  }, [prediction.disease]);
 
-  if (!prediction) {
-    return (
-      <UserLayout title="Prediction Result" breadcrumb={["Dashboard", "Predict", "Result"]}>
-        <div className="text-center py-20 text-muted-foreground">
-          <p>No prediction found. Please run a new prediction.</p>
-          <Button asChild variant="outline" className="mt-4"><Link to="/dashboard/predict">Go to Predict</Link></Button>
-        </div>
-      </UserLayout>
-    );
-  }
+  const handleDownloadPdf = () => {
+    // We will use native window.print() to generate the PDF reliably
+    // We'll apply print-specific CSS so only the card is printed
+    window.print();
+  };
 
-  const symptoms: string[] = JSON.parse(prediction.symptoms);
   const confidencePct = prediction.confidence != null ? Math.round(prediction.confidence * 100) : null;
-
-  // Derive risk level from confidence
   const risk = confidencePct != null
     ? confidencePct >= 80 ? "High" : confidencePct >= 60 ? "Moderate" : "Low"
     : "Unknown";
 
-  // Split recommendations into bullet points
   const recommendationLines = prediction.recommendations
     .split(/\.\s+/)
     .map((s) => s.trim())
     .filter(Boolean);
 
-  return (
-    <UserLayout title="Prediction Result" breadcrumb={["Dashboard", "Predict", "Result"]}>
-      <div className="space-y-6">
-        <Button asChild variant="ghost" size="sm"><Link to="/dashboard/predict"><ArrowLeft className="h-3 w-3" /> Back</Link></Button>
+  let parsedSymptoms: any[] = [];
+  try {
+    parsedSymptoms = prediction.severity_log ? JSON.parse(prediction.severity_log) : JSON.parse(prediction.symptoms);
+  } catch (e) {
+    parsedSymptoms = [];
+  }
 
+  return (
+    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Container for PDF Generation */}
+      <div ref={pdfRef} className="space-y-6 bg-background">
+        
         {/* Hero card */}
         <div className="bg-gradient-hero text-primary-foreground rounded-2xl p-8 shadow-soft">
           <div className="flex flex-wrap items-start justify-between gap-4">
@@ -56,7 +54,13 @@ function ResultPage() {
                 <Stethoscope className="h-3.5 w-3.5" /> AI Prediction
               </div>
               <h2 className="text-4xl font-bold">{prediction.disease}</h2>
-              <p className="mt-2 opacity-90">Based on {symptoms.length} symptom{symptoms.length !== 1 ? "s" : ""}: {symptoms.join(", ")}.</p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {parsedSymptoms.map((s, i) => (
+                  <span key={i} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 text-xs font-medium border border-white/10">
+                    {typeof s === "string" ? s : `${s.name} (${s.severity}, ${s.duration})`}
+                  </span>
+                ))}
+              </div>
             </div>
             {confidencePct != null && (
               <div className="text-right">
@@ -87,20 +91,25 @@ function ResultPage() {
           <div className="bg-card rounded-2xl border border-border p-6 shadow-soft">
             <h3 className="font-semibold flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary" /> Doctor's Advice</h3>
             <p className="mt-4 text-sm text-muted-foreground">
-              While this prediction has {confidencePct != null ? `${confidencePct}% confidence` : "been made"}, please consult a licensed physician
-              if symptoms persist, worsen suddenly, or you experience difficulty breathing, chest pain, or persistent high fever.
+              While this prediction suggests you may have {prediction.disease}, please consult a licensed physician
+              immediately if your symptoms persist, worsen suddenly, or you experience difficulty breathing, severe pain, or persistent high fever.
             </p>
-            <div className="mt-4 p-3 rounded-lg bg-muted text-xs text-muted-foreground">
+            <div className="mt-4 p-3 rounded-lg bg-muted text-xs text-muted-foreground border border-border">
               <strong>Disclaimer:</strong> HealthPredictor is for informational purposes only and is not a substitute for professional medical advice.
             </div>
           </div>
         </div>
 
-        <div className="flex gap-3 justify-end">
-          <Button variant="outline" asChild><Link to="/dashboard/history">View History</Link></Button>
-          <Button asChild><Link to="/dashboard/predict">New Prediction</Link></Button>
-        </div>
+
       </div>
-    </UserLayout>
+
+      <div className="flex gap-3 justify-end border-t border-border pt-4 print:hidden">
+        <Button variant="outline" onClick={handleDownloadPdf}>
+          <Download className="h-4 w-4 mr-2" /> Download PDF
+        </Button>
+        <Button variant="outline" asChild><Link to="/dashboard/history">View History</Link></Button>
+        <Button onClick={onReset}>New Prediction</Button>
+      </div>
+    </div>
   );
 }

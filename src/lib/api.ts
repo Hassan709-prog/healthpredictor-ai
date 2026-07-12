@@ -58,6 +58,33 @@ export interface Prediction {
   disease: string;
   confidence: number | null;
   recommendations: string;
+  severity_log: string | null;
+  created_at: string;
+}
+
+export interface SymptomDetail {
+  name: string;
+  severity: string;
+  duration: string;
+}
+
+export interface Specialist {
+  id: number;
+  name: string;
+  specialty: string;
+  location: string | null;
+  contact: string | null;
+  rating: number | null;
+  image_url: string | null;
+}
+
+export interface JournalEntry {
+  id: number;
+  user_id: number;
+  date: string;
+  temperature: number | null;
+  blood_pressure: string | null;
+  mood: string | null;
   created_at: string;
 }
 
@@ -160,10 +187,10 @@ export const api = {
   // ─────────────────── Predict ───────────────────
 
   predict: {
-    async run(symptoms: string[]): Promise<Prediction> {
+    async run(symptoms: string[], symptom_details?: SymptomDetail[]): Promise<Prediction> {
       return request<Prediction>("/api/predict/", {
         method: "POST",
-        body: JSON.stringify({ symptoms }),
+        body: JSON.stringify({ symptoms, symptom_details }),
       });
     },
 
@@ -259,4 +286,26 @@ export const api = {
       return request<void>(`/api/admin/diseases/${id}`, { method: "DELETE" });
     },
   },
+
+  // ─────────────────── Specialists ───────────────────
+
+  specialist: {
+    async getForDisease(disease: string): Promise<Specialist[]> {
+      return request<Specialist[]>(`/api/specialist/?disease=${encodeURIComponent(disease)}`, {}, false);
+    }
+  },
+
+  // ─────────────────── Journal ───────────────────
+
+  journal: {
+    async create(payload: { date: string; temperature?: number; blood_pressure?: string; mood?: string }): Promise<JournalEntry> {
+      return request<JournalEntry>("/api/journal/", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+    },
+    async list(): Promise<JournalEntry[]> {
+      return request<JournalEntry[]>("/api/journal/");
+    }
+  }
 };

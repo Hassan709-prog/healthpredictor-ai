@@ -1,15 +1,18 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import {
-  LayoutDashboard, Stethoscope, History, User, LogOut, Bell, Menu, Activity,
+  LayoutDashboard, Stethoscope, History, User, LogOut, Bell, Menu, Activity, FileText
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
+import { ModeToggle } from "@/components/mode-toggle";
 
 const nav = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { to: "/dashboard/predict", label: "Predict Disease", icon: Stethoscope },
   { to: "/dashboard/history", label: "Prediction History", icon: History },
+  { to: "/dashboard/reports", label: "My Reports", icon: FileText },
+  { to: "/dashboard/journal", label: "Health Journal", icon: Activity },
   { to: "/dashboard/profile", label: "My Profile", icon: User },
 ] as const;
 
@@ -95,6 +98,7 @@ export function UserLayout({ children, title, breadcrumb }: { children: ReactNod
             <Bell className="h-5 w-5" />
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
           </button>
+          <ModeToggle />
           <div className="flex items-center gap-3 pl-3 border-l border-border">
             <div className="hidden md:block text-right">
               <div className="text-sm font-medium">{user?.name ?? "User"}</div>
