@@ -54,8 +54,14 @@ class Token(BaseModel):
 
 # ────────────────────────── Predictions ──────────────────────────
 
+class SymptomDetail(BaseModel):
+    name: str
+    severity: str
+    duration: str
+
 class PredictionCreate(BaseModel):
     symptoms: List[str]
+    symptom_details: Optional[List[SymptomDetail]] = None
 
 
 class PredictionResponse(BaseModel):
@@ -65,6 +71,7 @@ class PredictionResponse(BaseModel):
     disease: str
     confidence: Optional[float] = None
     recommendations: str
+    severity_log: Optional[str] = None
     created_at: datetime
 
     class Config:
@@ -115,3 +122,40 @@ class AdminStats(BaseModel):
     total_predictions: int
     total_symptoms: int
     total_diseases: int
+
+
+# ────────────────────────── Specialists ──────────────────────────
+
+class SpecialistResponse(BaseModel):
+    id: int
+    name: str
+    specialty: str
+    location: Optional[str] = None
+    contact: Optional[str] = None
+    rating: Optional[float] = None
+    image_url: Optional[str] = None
+
+    class Config:
+        from_attributes = True
+
+
+# ────────────────────────── Journal Entries ──────────────────────────
+
+class JournalEntryCreate(BaseModel):
+    date: str
+    temperature: Optional[float] = None
+    blood_pressure: Optional[str] = None
+    mood: Optional[str] = None
+
+
+class JournalEntryResponse(BaseModel):
+    id: int
+    user_id: int
+    date: str
+    temperature: Optional[float] = None
+    blood_pressure: Optional[str] = None
+    mood: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from database import engine, Base
-from routers import auth, predict, admin
+from routers import auth, predict, admin, specialist, journal
 
 # Create tables if they don't exist yet (works for both SQLite dev and Supabase)
 Base.metadata.create_all(bind=engine)
@@ -46,6 +46,8 @@ async def global_exception_handler(request: Request, exc: Exception):
 app.include_router(auth.router,    prefix="/api/auth",    tags=["Auth"])
 app.include_router(predict.router, prefix="/api/predict", tags=["Predict"])
 app.include_router(admin.router,   prefix="/api/admin",   tags=["Admin"])
+app.include_router(specialist.router, prefix="/api/specialist", tags=["Specialist"])
+app.include_router(journal.router, prefix="/api/journal", tags=["Journal"])
 
 
 @app.get("/", tags=["Health"])
