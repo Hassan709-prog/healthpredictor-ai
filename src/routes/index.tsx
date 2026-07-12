@@ -80,11 +80,7 @@ function Hero() {
             <Button asChild size="lg"><Link to="/register">Get Started Free</Link></Button>
             <Button asChild size="lg" variant="outline"><Link to="/login">Sign In</Link></Button>
           </div>
-          <div className="mt-10 grid grid-cols-3 gap-6 max-w-md">
-            <Stat value="50K+" label="Active Users" />
-            <Stat value="95%" label="Accuracy" />
-            <Stat value="200+" label="Diseases" />
-          </div>
+
         </div>
         <div className="relative">
           <div className="absolute -inset-4 bg-gradient-hero opacity-20 blur-3xl rounded-3xl" />
@@ -180,7 +176,6 @@ function Benefits() {
     "Reduce unnecessary doctor visits",
     "Track family health in one place",
     "Personalized lifestyle recommendations",
-    "Trusted by 50,000+ users worldwide",
   ];
   return (
     <section className="py-20 bg-gradient-hero text-primary-foreground">
@@ -209,28 +204,9 @@ function Testimonials() {
     { name: "Aisha P.", role: "Nurse", text: "Beautiful interface, accurate predictions. A real game changer." },
   ];
   return (
-    <section className="py-20 max-w-7xl mx-auto px-4 md:px-8">
-      <h2 className="text-3xl md:text-4xl font-bold text-center">What our users say</h2>
-      <div className="mt-12 grid md:grid-cols-3 gap-6">
-        {items.map((t) => (
-          <div key={t.name} className="p-6 rounded-2xl bg-card border border-border shadow-soft">
-            <div className="flex gap-1 text-warning mb-3">
-              {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-4 w-4 fill-current" />)}
-            </div>
-            <p className="text-sm text-muted-foreground">"{t.text}"</p>
-            <div className="mt-4 flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-gradient-hero text-primary-foreground grid place-items-center font-semibold text-sm">
-                {t.name.split(" ").map(s => s[0]).join("")}
-              </div>
-              <div>
-                <div className="text-sm font-semibold">{t.name}</div>
-                <div className="text-xs text-muted-foreground">{t.role}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
+    <div>
+
+    </div>
   );
 }
 
