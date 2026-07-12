@@ -1,9 +1,7 @@
 // Central API client for HealthPredictor AI backend
 // Base URL reads from Vite env var, falls back to localhost
 
-const BASE_URL = import.meta.env.PROD 
-  ? "https://healthpredictor-ai-production.up.railway.app" 
-  : "http://127.0.0.1:8000";
+const BASE_URL = import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8000";
 
 // ─────────────────── Token helpers ───────────────────
 
